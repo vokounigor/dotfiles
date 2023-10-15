@@ -113,6 +113,7 @@ alias dp="docker ps"
 alias dim="docker images"
 alias vim="nvim"
 alias q="exit"
+alias lg="lazygit"
 
 export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/emulator

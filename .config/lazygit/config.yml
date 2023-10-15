@@ -1,5 +1,5 @@
 os:
-  editCommand: "floaterm"
+  edit: "floaterm"
 
 keybinding:
   universal:
