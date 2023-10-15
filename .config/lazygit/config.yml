@@ -6,6 +6,8 @@ keybinding:
     return: "<c-/>"
 
 gui:
+  scrollHeight: 10
+  scrollPastBottom: false
   theme:
     selectedLineBgColor:
       - underline
