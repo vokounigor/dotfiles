@@ -1,5 +1,5 @@
 os:
-  edit: "floaterm"
+  editPreset: "nvim"
 
 keybinding:
   universal:
