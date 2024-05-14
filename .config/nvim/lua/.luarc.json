@@ -1,0 +1,25 @@
+{
+    "workspace.library": [
+        "/Users/vokounigor/.config/nvim",
+        "/Users/vokounigor/.local/share/nvim/lazy/lazy.nvim",
+        "/Users/vokounigor/.local/share/nvim/lazy/nvim-lsp-file-operations",
+        "/Users/vokounigor/.local/share/nvim/lazy/cmp-nvim-lsp",
+        "/Users/vokounigor/.local/share/nvim/lazy/nvim-lspconfig",
+        "/Users/vokounigor/.local/share/nvim/lazy/none-ls.nvim",
+        "/Users/vokounigor/.local/share/nvim/lazy/mason-null-ls.nvim",
+        "/Users/vokounigor/.local/share/nvim/lazy/mason-lspconfig.nvim",
+        "/Users/vokounigor/.local/share/nvim/lazy/mason.nvim",
+        "/Users/vokounigor/.local/share/nvim/lazy/plenary.nvim",
+        "/Users/vokounigor/.local/share/nvim/lazy/harpoon",
+        "/Users/vokounigor/.local/share/nvim/lazy/nvim-tree.lua",
+        "/Users/vokounigor/.local/share/nvim/lazy/nvim-web-devicons",
+        "/Users/vokounigor/.local/share/nvim/lazy/lualine.nvim",
+        "/Users/vokounigor/.local/share/nvim/lazy/nvim",
+        "/opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime",
+        "/opt/homebrew/Cellar/neovim/0.9.4/lib/nvim",
+        "/Users/vokounigor/.local/state/nvim/lazy/readme",
+        "/Users/vokounigor/.local/share/nvim/lazy/cmp-nvim-lsp/after",
+        "/Users/vokounigor/.local/share/nvim/lazy/nvim/after",
+        "${3rd}/luassert/library"
+    ]
+}
