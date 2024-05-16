@@ -29,6 +29,12 @@ return {
   
 		opts.desc = "Show LSP implementations"
 		keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts) -- show lsp implementations
+
+    opts.desc = "Show LSP Symbols"
+    keymap.set("n", "<leader>ds", "<cmd>Telescope lsp_document_symbols<CR>", opts) -- show all symbols (functions, classes...)
+
+    opts.desc = "Rename the var under cursor"
+    keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
   
 		opts.desc = "Show LSP type definitions"
 		keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts) -- show lsp type definitions
@@ -59,7 +65,8 @@ return {
 	  end
   
 	  -- used to enable autocompletion (assign to every lsp server config)
-	  local capabilities = cmp_nvim_lsp.default_capabilities()
+	  local capabilities = vim.lsp.protocol.make_client_capabilities()
+    capabilities = vim.tbl_deep_extend("force", capabilities, cmp_nvim_lsp.default_capabilities())
   
 	  -- Change the Diagnostic symbols in the sign column (gutter)
 	  -- (not in youtube nvim video)
@@ -95,9 +102,9 @@ return {
         tailwindCSS = {
           experimental = {
             classRegex = {
-              { "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" }, -- class variance authority
-              { "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" }, -- class variance authority
-              { "clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" }, -- clsx
+              { "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
+              { "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
+              { "clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
             },
           },
         },
@@ -109,20 +116,25 @@ return {
 		capabilities = capabilities,
 		on_attach = on_attach,
 		settings = { -- custom settings for lua
-		  Lua = {
-			-- make the language server recognize "vim" global
-			diagnostics = {
-			  globals = { "vim" },
-			},
-			workspace = {
-			  -- make language server aware of runtime files
-			  library = {
-				[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-				[vim.fn.stdpath("config") .. "/lua"] = true,
-			  },
-			},
-		  },
-		},
+        Lua = {
+        runtime = "LuaJIT",
+        -- make the language server recognize "vim" global
+        completion = {
+          callSnippet = 'Replace',
+        },
+        diagnostics = {
+          enable = true,
+          globals = {'vim', 'use'},
+        },
+        workspace = {
+          check_third_party = false,
+          library = vim.api.nvim_get_runtime_file('', true),
+          maxPreload = 10000,
+          preloadFileSize = 10000,
+        },
+        telemetry = {enable = false}
+        },
+      },
 	  })
 
 	  lspconfig["gopls"].setup({
@@ -133,10 +145,10 @@ return {
 		root_dir = util.root_pattern("go.work", "go.mod", ".git"),
 		settings = {
 		  gopls = {
-			completeUnimported = true,
+        completeUnimported = true,
 		  },
 		},
 	  })
 	end,
   }
-  
+
