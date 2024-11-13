@@ -33,8 +33,20 @@ return {
 		  ["<C-f>"] = cmp.mapping.scroll_docs(4),
 		  ["<C-Space>"] = cmp.mapping.complete(), -- show completion suggestions
 		  ["<C-e>"] = cmp.mapping.abort(), -- close completion window
-		  ["<CR>"] = cmp.mapping.confirm({ select = false }),
-		}),
+      ["<CR>"] = cmp.mapping.confirm { select = false },
+      ["<C-J>"] = cmp.mapping(function(fallback)
+      cmp.mapping.abort()
+        local copilot_keys = vim.fn["copilot#Accept"]()
+          if copilot_keys ~= "" then
+            vim.api.nvim_feedkeys(copilot_keys, "i", true)
+          else
+            fallback()
+          end
+        end, {
+        "i",
+        "s",
+        }),
+      }),
 		-- sources for autocompletion
 		sources = cmp.config.sources({
 		  { name = "nvim_lsp" },
@@ -52,4 +64,3 @@ return {
 	  })
 	end,
   }
-  

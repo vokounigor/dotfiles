@@ -22,7 +22,7 @@ return {
 		-- setup formatters & linters
 		sources = {
 		  formatting.prettier,
-		  require("none-ls.diagnostics.eslint_d").with({ -- js/ts linter
+		  require("none-ls.diagnostics.eslint").with({ -- js/ts linter
 			condition = function(utils)
 			  return utils.root_has_file({ ".eslintrc.js", ".eslintrc.cjs", ".eslintrc.json", ".eslintrc" })
 			end,

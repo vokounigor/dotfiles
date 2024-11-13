@@ -2,7 +2,7 @@ return {
   'Exafunction/codeium.vim',
   event = 'BufEnter',
   config = function ()
-    vim.g.codeium_enabled = true -- enabled by default
+    vim.g.codeium_enabled = false -- enabled by default
     vim.keymap.set('i', '<C-g>', function () return vim.fn['codeium#Accept']() end, { expr = true, silent = true })
     vim.keymap.set('i', '<c-f>', function() return vim.fn['codeium#CycleCompletions'](1) end, { expr = true, silent = true })
     vim.keymap.set('i', '<c-d>', function() return vim.fn['codeium#CycleCompletions'](-1) end, { expr = true, silent = true })

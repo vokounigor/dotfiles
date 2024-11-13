@@ -79,21 +79,29 @@ return {
 	  -- configure html server
 	  lspconfig["html"].setup({
 		capabilities = capabilities,
-		on_attach = on_attach,
+    on_attach = on_attach,
 	  })
   
 	  -- configure typescript server with plugin
-	  lspconfig["tsserver"].setup({
+	  lspconfig["ts_ls"].setup({
 		  capabilities = capabilities,
 		  on_attach = on_attach,
+      root_dir = lspconfig.util.root_pattern("package.json"),
+      single_file_support = false
 	  })
+
+    lspconfig["denols"].setup({
+      capabilities = capabilities,
+		  on_attach = on_attach,
+      root_dir = lspconfig.util.root_pattern("deno.json", "deno.jsonc"),
+    })
   
 	  -- configure css server
 	  lspconfig["cssls"].setup({
 		capabilities = capabilities,
 		on_attach = on_attach,
 	  })
-  
+
 	  -- configure tailwindcss server
 	  lspconfig["tailwindcss"].setup({
       capabilities = capabilities,
@@ -136,6 +144,11 @@ return {
         },
       },
 	  })
+
+    lspconfig["solargraph"].setup({
+      capabilities = capabilities,
+      on_attach = on_attach,
+    })
 
 	  lspconfig["gopls"].setup({
 		capabilities = capabilities,

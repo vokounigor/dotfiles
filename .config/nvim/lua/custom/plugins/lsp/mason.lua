@@ -28,7 +28,7 @@ return {
 		mason_lspconfig.setup({
 		-- list of servers for mason to install
 		ensure_installed = {
-			"tsserver",
+			"ts_ls",
 			"html",
 			"cssls",
 			"tailwindcss",
@@ -43,7 +43,7 @@ return {
 			-- list of formatters & linters for mason to install
 			ensure_installed = {
 				"prettier", -- ts/js formatter
-				"eslint_d", -- ts/js linter
+				"eslint", -- ts/js linter
 			},
 			-- auto-install configured servers (with lspconfig)
 			automatic_installation = true,
