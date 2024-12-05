@@ -2,10 +2,9 @@ return {
   "zbirenbaum/copilot.lua",
   cmd = "Copilot",
   event = "InsertEnter",
-  config = function()
-    require("copilot").setup({
+  opts = {
     panel = {
-      enabled = true,
+      enabled = false,
       auto_refresh = false,
       keymap = {
         jump_prev = "[[",
@@ -25,7 +24,7 @@ return {
     hide_during_completion = true,
     debounce = 75,
     keymap = {
-      accept = "<Tab>",
+      accept = "<C-r>",
       accept_word = false,
       accept_line = false,
       next = "<M-]>",
@@ -46,6 +45,6 @@ return {
   },
   copilot_node_command = 'node', -- Node.js version must be > 18.x
   server_opts_overrides = {},
-    })
-  end,
+  },
 }
+
