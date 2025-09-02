@@ -27,7 +27,6 @@ return {
 			  return utils.root_has_file({ ".eslintrc.js", ".eslintrc.cjs", ".eslintrc.json", ".eslintrc" })
 			end,
 		  }),
-      formatting.gofmt,
 		},
 		-- configure format on save
 		on_attach = function(current_client, bufnr)

@@ -1,0 +1,61 @@
+""" Map leader to space ---------------------
+let mapleader=" "
+
+""" Plugins  --------------------------------
+set surround
+set multiple-cursors
+set commentary
+set argtextobj
+set textobj-entire
+set ReplaceWithRegister
+
+""" Plugin settings -------------------------
+let g:argtextobj_pairs="[:],(:),<:>"
+
+""" Common settings -------------------------
+set showmode
+set so=5
+set incsearch
+set nu
+set clipboard+=unnamedplus
+set relativenumber
+
+""" Idea specific settings ------------------
+set ideajoin
+set ideastatusicon=gray
+set idearefactormode=keep
+
+" Window Splits
+nnoremap <leader>sv :action SplitVertically <CR>
+nnoremap <leader>sh :action SplitHorizontally <CR>
+map <C-h> <C-w>h
+map <C-l> <C-w>l
+map <C-k> <C-w>k
+map <C-j> <C-w>j
+
+" Errors
+nmap ]d <Action>(GotoNextError)
+nmap [d <Action>(GotoPreviousError)
+
+" LSP
+nmap gr :action ShowUsages <CR>
+nmap gd <Action>(GotoImplementation)
+nmap gcc <Action>(CommentByLineComment)
+nmap <leader>ca :action ShowIntentionActions <CR>
+nmap <leader>p :action ReformatCode <CR>
+nmap <leader>rn <Action>(RenameElement)
+
+" Searches
+nnoremap <leader>fs :action SearchEverywhere <CR>
+nnoremap <leader>ff :action GotoFile <CR>
+nnoremap <leader>fd :action FileStructurePopup <CR>
+
+" tabs
+nmap <S-h> :action PreviousTab<CR>
+nmap <S-l> :action NextTab<CR>
+map <leader>e <Action>(ActivateProjectToolWindow)
+
+" Visual mode
+vmap J <Action>(MoveLineDown)
+vmap K <Action>(MoveLineUp)
+
