@@ -32,9 +32,7 @@ return {
 					"markdown_inline",
 					"bash",
 					"lua",
-					"vim",
 					"dockerfile",
-					"gitignore",
 				},
 				-- enable nvim-ts-context-commentstring plugin for commenting tsx and jsx
 				require("ts_context_commentstring").setup({
