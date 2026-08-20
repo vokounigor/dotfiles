@@ -18,7 +18,7 @@ return {
 
 				local telescope = require("telescope.builtin")
 
-				map("gr", telescope.lsp_references, "[G]oto [R]eferences")
+				map("gR", telescope.lsp_references, "[G]oto [R]eferences")
 				map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 				map("gd", telescope.lsp_definitions, "[G]oto [D]efinition")
 				map("gi", telescope.lsp_implementations, "[G]oto [I]mplementation")
@@ -30,15 +30,11 @@ return {
 				map("[d", vim.diagnostic.goto_prev, "Go to previous diagnostic")
 				map("]d", vim.diagnostic.goto_next, "Go to next diagnostic")
 				map("K", vim.lsp.buf.hover, "Show documentation under cursor")
-				map("<leader>rs", ":LspRestart<CR>", "Restart LSP")
+				map("<leader>rs", ":lsp restart<CR><CR>", "Restart LSP")
 				-- map("gW", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Open Workspace Symbols")
 
 				local function client_supports_method(client, method, bufnr)
-					if vim.fn.has("nvim-0.11") == 1 then
-						return client:supports_method(method, bufnr)
-					else
-						return client.supports_method(method, { bufnr = bufnr })
-					end
+					return client:supports_method(method, bufnr)
 				end
 
 				local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -94,6 +90,24 @@ return {
 		--  - filetypes (table): Override the default list of associated filetypes for the server
 		--  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
 		--  - settings (table): Override the default settings passed when initializing the server.
+		local license_path = vim.fn.expand("~/intelephense/licence.txt")
+		local license_key
+		if vim.fn.filereadable(license_path) == 1 then
+			for _, line in ipairs(vim.fn.readfile(license_path)) do
+				local value = line:match("^%s*(.-)%s*$")
+				if value ~= "" then
+					license_key = value
+					break
+				end
+			end
+		end
+
+		local intelephense_settings = {}
+		if license_key then
+			intelephense_settings.intelephense = { licenceKey = license_key }
+		end
+
+		-- To enable Tailwind for a project, add tailwindcss = {} here and tailwindcss-language-server to ensure_installed.
 		local servers = {
 			-- clangd = {},
 			-- gopls = {},
@@ -109,9 +123,7 @@ return {
 			--
 
 			lua_ls = {
-				-- cmd = { ... },
-				-- filetypes = { ... },
-				-- capabilities = {},
+				root_markers = { ".luarc.json", ".luarc.jsonc", ".git" },
 				settings = {
 					Lua = {
 						completion = {
@@ -121,41 +133,81 @@ return {
 				},
 			},
 
-			tailwindcss = {
-				settings = {
-					tailwindCSS = {
-						experimental = {
-							classRegex = {
-								{ "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
-								{ "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
-								{ "cn\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
-								{ "clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
-							},
+			intelephense = {
+				root_markers = { "composer.json", ".git" },
+				filetypes = { "php" },
+				settings = intelephense_settings,
+				root_dir = function(bufnr, on_dir)
+					local filename = vim.api.nvim_buf_get_name(bufnr)
+					local dirname = filename == "" and vim.fn.getcwd() or vim.fs.dirname(filename)
+					local git = vim.fs.find(".git", { path = dirname, upward = true, type = "directory" })[1]
+					if git then
+						on_dir(vim.fs.dirname(git))
+						return
+					end
+
+					local composer = vim.fs.find("composer.json", { path = dirname, upward = true, type = "file" })[1]
+					on_dir(composer and vim.fs.dirname(composer) or dirname)
+				end,
+				before_init = function(params, config)
+					local include_paths = require("custom.core.project-tools").composer_include_paths(config.root_dir)
+					local settings = vim.tbl_deep_extend("force", config.settings or params.settings or {}, {
+						intelephense = {
+							environment = { includePaths = include_paths },
 						},
-					},
+					})
+					params.settings = settings
+					config.settings = settings
+				end,
+			},
+
+			eslint = {
+				filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+				root_markers = {
+					"eslint.config.js",
+					"eslint.config.mjs",
+					"eslint.config.cjs",
+					"eslint.config.ts",
+					"eslint.config.mts",
+					"eslint.config.cts",
+					".eslintrc",
+					".eslintrc.js",
+					".eslintrc.cjs",
+					".eslintrc.json",
+					".eslintrc.yaml",
+					".eslintrc.yml",
+				},
+				root_dir = function(bufnr, on_dir)
+					local root = require("custom.core.project-tools").eslint_root(bufnr)
+					if root then
+						on_dir(root)
+					end
+				end,
+				settings = {
+					workingDirectory = { mode = "location" },
+					format = { enable = true },
 				},
 			},
 		}
 
-		local ensure_installed = vim.tbl_keys(servers or {})
-		vim.list_extend(ensure_installed, {
+		local ensure_installed = {
+			"lua-language-server",
+			"intelephense",
+			"eslint-lsp",
+			"php-cs-fixer",
 			"stylua",
-		})
+		}
 		require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
 		require("mason-lspconfig").setup({
 			ensure_installed = {},
-			automatic_installation = false,
-			handlers = {
-				function(server_name)
-					local server = servers[server_name] or {}
-					-- This handles overriding only values explicitly passed
-					-- by the server configuration above. Useful when disabling
-					-- certain features of an LSP (for example, turning off formatting for ts_ls)
-					server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-					require("lspconfig")[server_name].setup(server)
-				end,
-			},
+			automatic_enable = false,
 		})
+
+		for server_name, server in pairs(servers) do
+			server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
+			vim.lsp.config(server_name, server)
+			vim.lsp.enable(server_name)
+		end
 	end,
 }

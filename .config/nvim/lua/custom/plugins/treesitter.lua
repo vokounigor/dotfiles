@@ -1,46 +1,61 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
-		event = { "BufReadPre", "BufNewFile" },
+		branch = "main",
+		lazy = false,
 		build = ":TSUpdate",
 		dependencies = {
 			"windwp/nvim-ts-autotag",
 		},
 		config = function()
-			-- import nvim-treesitter plugin
-			local treesitter = require("nvim-treesitter.configs")
+			for _, path in ipairs({ "/opt/homebrew/bin", "/usr/local/bin" }) do
+				if vim.fn.isdirectory(path) == 1 and not vim.env.PATH:find(path, 1, true) then
+					vim.env.PATH = path .. ":" .. vim.env.PATH
+				end
+			end
 
-			-- configure treesitter
-			treesitter.setup({ -- enable syntax highlighting
-				highlight = {
-					enable = true,
-				},
-				-- enable indentation
-				indent = { enable = true },
-				-- enable autotagging (w/ nvim-ts-autotag plugin)
-				autotag = { enable = true },
-				-- ensure these language parsers are installed
-				ensure_installed = {
-					"json",
-					"javascript",
-					"typescript",
-					"tsx",
-					"yaml",
-					"html",
-					"css",
-					"markdown",
-					"markdown_inline",
-					"bash",
-					"lua",
-					"dockerfile",
-				},
-				-- enable nvim-ts-context-commentstring plugin for commenting tsx and jsx
-				require("ts_context_commentstring").setup({
-					enable = true,
-					enable_autocmd = false,
-				}),
-				-- auto install above language parsers
-				auto_install = true,
+			local treesitter = require("nvim-treesitter")
+			local parsers = {
+				"php",
+				"json",
+				"javascript",
+				"typescript",
+				"tsx",
+				"yaml",
+				"html",
+				"css",
+				"markdown",
+				"bash",
+				"lua",
+				"dockerfile",
+			}
+			local filetypes = {
+				"php",
+				"json",
+				"javascript",
+				"javascriptreact",
+				"typescript",
+				"typescriptreact",
+				"yaml",
+				"html",
+				"css",
+				"markdown",
+				"markdown_inline",
+				"bash",
+				"lua",
+				"dockerfile",
+			}
+
+			treesitter.setup({})
+			treesitter.install(parsers)
+			require("nvim-ts-autotag").setup()
+
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = filetypes,
+				callback = function(event)
+					vim.treesitter.start(event.buf)
+					vim.bo[event.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+				end,
 			})
 		end,
 	},
